@@ -1,0 +1,75 @@
+#!/bin/bash
+
+#SBATCH -J colm_CASENAME
+#SBATCH -p cpu_parallel
+#SBATCH -o colm-%j.out
+#SBATCH -e colm-%j.err
+#SBATCH -N 10
+#SBATCH -n 600
+#SBATCH --ntasks-per-node=60
+#SBATCH --mem=220G
+#SBATCH --exclusive
+#SBATCH -t 7-24:00
+
+module purge
+module load compiler/intel/2021.3.1
+module load mpi/intelmpi/2018.4.274
+module load mathlib/netcdf/intel/4.4.1
+module load mathlib/hdf5/intel/1.8.20
+source /public/software/compiler/intel-compiler/2021.3.0/mkl/env/vars.sh
+
+export I_MPI_FABRICS=shm:dapl
+export I_MPI_DAPL_UD=1
+export I_MPI_DAPL_UD_RDMA_MIXED=1
+export I_MPI_LARGE_SCALE_THRESHOLD=8192
+export I_MPI_DAPL_UD_ACK_SEND_POOL_SIZE=8704
+export I_MPI_DAPL_UD_ACK_RECV_POOL_SIZE=8704
+export I_MPI_DAPL_UD_RNDV_EP_NUM=2
+
+export DAPL_UCM_REP_TIME=8000 #  REQUEST timer, waiting for REPLY in millisecs
+export DAPL_UCM_RTU_TIME=8000 #  REPLY timer, waiting for RTU in millisecs
+export DAPL_UCM_RETRY=10 #  REQUEST and REPLY retries
+export DAPL_UCM_CQ_SIZE=2000
+export DAPL_UCM_QP_SIZE=2000
+
+export DAPL_UCM_DREQ_RETRY=4 #default == 1
+export DAPL_UCM_DREP_TIME=200 #default == 200ms
+export DAPL_UCM_WAIT_TIME=10000 #default == 60000ms
+
+ulimit -s unlimited
+scontrol show hostname > bld/run/nd
+NP=$SLURM_NPROCS
+
+iloop=1
+
+while [ $iloop -le 100 ]
+do
+   cd /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME
+   echo start running clm.x
+   mpirun -np $NP bld/run/colm.x ./input_CASENAME.nml > log-$iloop
+   echo clm completed
+   echo archive history and rename restart
+   if [ ! -d /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME/restart/loop-$iloop ];then
+      mkdir /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME/restart/loop-$iloop
+   fi
+   if [ ! -d /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME/history/loop-$iloop ];then
+      mkdir /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME/history/loop-$iloop
+   fi
+   cd /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME/restart
+   cp -p CASENAME*_1982*nc CASENAME*_const_*nc loop-$iloop
+   for files in *1982-001-00000*nc
+   do
+      cp -p ${files} ${files/1982-001/1981-001}
+   done
+   echo finish restart copy
+   cd /stu01/sunwy22/CoLM/CoLM202X1/run/CASENAME/history
+   for iyr in `seq -w 1981 1981`
+   do
+      for i in `seq -w 1 12`
+      do
+         mv CASENAME_hist_${iyr}-${i}.nc loop-$iloop/
+      done
+   done
+   iloop=`expr $iloop + 1`   
+done
+
