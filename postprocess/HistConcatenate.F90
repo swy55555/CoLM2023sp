@@ -63,6 +63,7 @@ program hist_concatenate
       CALL ncio_define_dimension (filehist, 'lake', nl_lake)
       CALL ncio_define_dimension (filehist, 'soilsnow', nl_soil-maxsnl)
       CALL ncio_define_dimension (filehist, 'band', 2)
+      CALL ncio_define_dimension (filehist, 'mutiband', 190)
       CALL ncio_define_dimension (filehist, 'rtyp', 2)
       if(DEF_USE_PLANTHYDRAULICS)then
          CALL ncio_define_dimension (filehist, 'vegnodes', nvegwcs)
@@ -192,7 +193,7 @@ program hist_concatenate
       'band', 'rtyp', 2, 2, compress, 'averaged albedo direct','%')
 
    call hist_concatenate_var_4d (filehist, 'f_albsp    ', timelen, &
-      'band', 'rtyp', 190, 2, compress, 'sp','%')
+      'mutiband', 'rtyp', 190, 2, compress, 'sp','%')
 
    call hist_concatenate_var_2d (filehist, 'f_emis   ', timelen, compress, &
       'averaged bulk surface emissivity','-')

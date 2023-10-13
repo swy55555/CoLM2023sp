@@ -210,6 +210,7 @@ ENDIF
       CALL ncio_create_file_vector (file_restart, landpft)
       CALL ncio_define_dimension_vector (file_restart, landpft, 'pft')
       CALL ncio_define_dimension_vector (file_restart, landpft, 'band', 2)
+      CALL ncio_define_dimension_vector (file_restart, landpft, 'mutiband', 190)
       CALL ncio_define_dimension_vector (file_restart, landpft, 'rtyp', 2)
 IF(DEF_USE_PLANTHYDRAULICS)THEN
       CALL ncio_define_dimension_vector (file_restart, landpft, 'vegnodes', nvegwcs)
@@ -920,6 +921,7 @@ IF(DEF_USE_PLANTHYDRAULICS)THEN
 ENDIF
 
      CALL ncio_define_dimension_vector (file_restart, landpatch, 'band', 2)
+     CALL ncio_define_dimension_vector (file_restart, landpatch, 'mutiband', 190)
      CALL ncio_define_dimension_vector (file_restart, landpatch, 'rtyp', 2)
 
      ! Time-varying state variables which reaquired by restart run
@@ -958,7 +960,7 @@ ENDIF
      CALL ncio_write_vector (file_restart, 'tsai    '   , 'patch', landpatch, tsai      , compress)                    ! stem area index
      CALL ncio_write_vector (file_restart, 'coszen  '   , 'patch', landpatch, coszen    , compress)                    ! cosine of solar zenith angle
      CALL ncio_write_vector (file_restart, 'alb     '   , 'band', 2, 'rtyp', 2, 'patch', landpatch, alb , compress)    ! averaged albedo [-]
-     CALL ncio_write_vector (file_restart, 'albsp   '   , 'band', 190, 'rtyp', 2, 'patch', landpatch, albsp , compress)
+     CALL ncio_write_vector (file_restart, 'albsp   '   , 'mutiband', 190, 'rtyp', 2, 'patch', landpatch, albsp , compress)
      CALL ncio_write_vector (file_restart, 'ssun    '   , 'band', 2, 'rtyp', 2, 'patch', landpatch, ssun, compress)    ! sunlit canopy absorption for solar radiation (0-1)
      CALL ncio_write_vector (file_restart, 'ssha    '   , 'band', 2, 'rtyp', 2, 'patch', landpatch, ssha, compress)    ! shaded canopy absorption for solar radiation (0-1)
      CALL ncio_write_vector (file_restart, 'thermk  '   , 'patch', landpatch, thermk    , compress)                    ! canopy gap fraction for tir radiation

@@ -601,7 +601,7 @@ contains
             'averaged albedo direct','%')
 
          call write_history_variable_4d ( DEF_hist_vars%albsp, &
-            a_albsp, file_hist, 'f_albsp', itime_in_file, 'band', 1, 190, 'rtyp', 1, 2, sumarea, filter, &
+            a_albsp, file_hist, 'f_albsp', itime_in_file, 'mutiband', 1, 190, 'rtyp', 1, 2, sumarea, filter, &
             'sp','%')
 
          ! averaged bulk surface emissivity

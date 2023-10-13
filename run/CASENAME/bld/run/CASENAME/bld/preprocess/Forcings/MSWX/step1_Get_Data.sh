@@ -1,1 +1,0 @@
-echo "please download Global 3-Hourly 0.1° Bias-Corrected Meteorological Data Including Near-Real-Time Updates and Forecast Ensembles (MSWX) from https://drive.google.com/drive/folders/1R1KRmldXmLj_09kzE2wKSrbXUzU3pQN9?usp=sharing"
